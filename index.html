@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Index</title>
+    </head>
+    <body>
+        <div id='loader_sys' style='display:none' >
+            <div style="opacity:0.5; width:100%; height:100%; z-index:100000; position:absolute; background-color:#FFF; top:0px;">
+            </div>
+            <div style="position:absolute; width:100%; text-align:center; z-index:200000; top:10%;">
+                <img src="img/loading.gif" style='left:50%; top:0px; width:100px;' />
+            </div>
+        </div>
+
+        <div id='content_master'></div>
+        <div class="app_none" style='display:none'> 
+        <div id="deviceready" class="blink"> 
+            <p class="event listening">Connecting to Device</p> 
+            <p class="event received">Device is Ready</p> 
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="barcodescanner.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="js/SuperDos.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){  
+              app.initialize(function(){
+              });            
+              IniciaApp();
+              app.onDeviceReady();      
+            });
+
+            function IniciaApp(){
+                contentPage(server+'/SuperDos/Login',function(RETORNO){
+                    RETORNO = RETORNO.replace("//||||","var HtmlPrincipal = callback;  HtmlPrincipal = HtmlPrincipal.replace(\"//funcionConsultaCodigo\", \"var HtmlConsultaCodigo = callback; HtmlConsultaCodigo = HtmlConsultaCodigo.replace('function funcionApp(){}','function ActivaScan(){ScanBarcode();} '); HtmlConsultaCodigo.replace(\\\"<button type='button' class='btn btn-info btn-flat'>Scan</button>\\\",\\\"<button type='button' class='btn btn-info btn-flat' onclick='ActivaScan()'>Scan</button>\\\"); \"); HtmlPrincipal = HtmlPrincipal.replace(\"//funcionActualizaInventario\",\"var HtmlActualizaInventario = callback; HtmlActualizaInventario = HtmlActualizaInventario.replace('function funcionApp(){}','function ActivaScan(){ScanBarcode2();} '); HtmlActualizaInventario.replace(\\\"<button type='button' class='btn btn-info btn-flat'>Scan</button>\\\",\\\"<button type='button' class='btn btn-info btn-flat' onclick='ActivaScan()'>Scan</button>\\\"); \"); setTimeout(function(){ $('#contenedor').html(''); $('#contenedor').html(HtmlPrincipal); },100); "); 
+					$("#content_master").html(RETORNO);
+                    setTimeout("$('#content_master').show(200);", 100); 
+                    setTimeout("$('#loader_sys').hide();", 100);
+					});
+			}
+		
+	    function ActualizarItem(){
+		    var dataPost = {
+			CODIGO: $("#txtCodigo").val(),
+			CANTIDAD: $("#txtCantidad").val(), 
+			BODEGA: $("#cmbBodega").val(),
+			USUARIO: usuario
+		    };
+
+		    AjaxSAC('SuperDos/ActualizarProducto', dataPost, true, function (callback) {
+			if (callback == "OK") {
+			    alert("Producto registrado para el inventario");
+			    $("#txtCodigo").val('');
+			    $("#txtProducto").val('');
+			    $("#txtCantidad").val('1');
+			} else
+			    alert(callback);
+		    });
+	    }
+		
+	    function ScanBarcode()
+            {
+                console.log('scanning');
+                var scanner = cordova.require("cordova/plugin/BarcodeScanner");
+                scanner.scan( function (result) { 
+		    $("#txtCodigo").val("");
+                    $("#txtCodigo").val(result.text);	
+		
+		    var dataPost = {
+			    CODIGO: result.text,
+			    USUARIO: usuario
+		    };
+			
+		    AjaxSAC('SuperDos/ObtenerProducto', dataPost, true, function (callback) {
+			    if (callback == '1') {
+				alert("No existe producto");
+				$("#txtProducto").val('');
+				$("#txtStock").val('');
+				$("#txtVendido").val('');
+				return;
+			    }
+
+			    if (callback == '2') {
+				alert("Ocurrió un problema al consultar el producto");
+				$("#txtProducto").val('');
+				$("#txtStock").val('');
+				$("#txtVendido").val('');
+				return;
+			    }
+
+			    $("#txtProducto").val(callback.split('|')[1]);
+			    $("#txtStock").val(callback.split('|')[2]);
+			    $("#txtVendido").val(callback.split('|')[3]);
+			});
+                }, function (error) { 
+                    console.log("Scanning failed: ", error); 
+                } );
+            }
+		
+            function ScanBarcode2()
+            {
+                console.log('scanning');
+                var scanner = cordova.require("cordova/plugin/BarcodeScanner");
+                scanner.scan( function (result) { 
+		    if($("#txtCodigo").val() == ''){
+			    ConsultarCodigoB(result.text);
+		    }else{
+			    var dataPost = {
+				CODIGO: $("#txtCodigo").val(),
+				CANTIDAD: $("#txtCantidad").val(), 
+				BODEGA: $("#cmbBodega").val(),
+				USUARIO: usuario
+			    };
+
+			    AjaxSAC('SuperDos/ActualizarProducto', dataPost, true, function (callback) {
+				if (callback == "OK") {
+				    alert("Producto registrado para el inventario");
+				    $("#txtCodigo").val('');
+				    $("#txtProducto").val('');
+				    $("#txtCantidad").val('1');
+				} else
+				    alert(callback);
+			    });
+			    
+			    setTimeout(function () { ConsultarCodigoB(result.text) }, 100);
+		    }
+			
+                }, function (error) { 
+                    console.log("Scanning failed: ", error); 
+                } );
+            }
+		
+		function ConsultarCodigoB(codBarras){
+		    $("#txtCodigo").val("");
+		    $("#txtCodigo").val(codBarras);
+
+		    var dataPost = {
+			    CODIGO: codBarras,
+			    USUARIO: usuario
+		    };
+
+		    AjaxSAC('SuperDos/ObtenerProducto', dataPost, true, function (callback) {
+			if (callback == '1') {
+			    alert("No existe producto");
+			    $("#txtCodigo").val('');
+			    $("#txtProducto").val('');
+			    $("#txtCantidad").val('1');
+			    return;
+			}
+
+			if (callback == '2') {
+			    alert("Ocurrió un problema al consultar el producto");
+			    return;
+			}
+
+			$("#txtCodigo").val(callback.split('|')[0]);
+			$("#txtProducto").val(callback.split('|')[1]);
+			$("#txtCantidad").val('1');
+			$("#txtCantidad").prop('disabled', false);
+		    });
+		}
+        </script>
+    </body>
+</html>
