@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head runat="server">
+    <title>Login</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	
+	<!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="fonts/font-awesome.min.css"/>
+    <!-- jvectormap -->
+    <link rel="stylesheet" href="plugins/jvectormap/jquery-jvectormap-1.2.2.css"/>
+    <!-- Theme style -->
+    <link rel="stylesheet" href="css/AdminLTE.min.css"/>
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+    folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="css/skins/_all-skins.min.css"/>
+    <style type="text/css">.jqstooltip { position: absolute;left: 0px;top: 0px;visibility: hidden;background: rgb(0, 0, 0) transparent;background-color: rgba(0,0,0,0.6);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";color: white;font: 10px arial, san serif;text-align: left;white-space: nowrap;padding: 5px;border: 1px solid white;z-index: 10000;}.jqsfield { color: white;font: 10px arial, san serif;text-align: left;}</style>
+</head>
+<body class="skin-blue sidebar-mini">
+    <section id="contenedorLogin" class="content">
+
+        <div class="login-box">
+          <div class="login-logo">
+            <span><b>UCSG</b></span>
+          </div>
+          <!-- /.login-logo -->
+          <div class="login-box-body">
+            <p class="login-box-msg"></p>
+
+              <div class="form-group has-feedback">
+                <input id="txtUsuario" class="form-control" placeholder="Usuario" maxlength="20"/>
+                <span class="fa fa-user form-control-feedback"></span>
+              </div>
+              <div class="form-group has-feedback">
+                <input id="txtPassword" type="password" class="form-control" placeholder="Clave" maxlength="20"/>
+                <span class="fa fa-lock form-control-feedback"></span>
+              </div>
+              <div class="row">
+                <div class="col-xs-12">
+                  <input type="button" onclick="javascript:Conectar();" class="btn btn-primary btn-block btn-flat" value="Iniciar">
+                </div>
+                <!-- /.col -->
+              </div>
+          </div>
+          <!-- /.login-box-body -->
+        </div>
+
+    </section>
+	    <section id="contenedor">
+    </section>
+
+    <!-- jQuery 2.2.3 -->
+    <script type="text/javascript" src="plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <!-- Bootstrap 3.3.6 -->
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script type="text/javascript" src="plugins/fastclick/fastclick.js"></script>
+    <!-- AdminLTE App -->
+    <script type="text/javascript" src="js/app.min.js"></script>
+    <!-- Sparkline -->
+    <script type="text/javascript" src="plugins/sparkline/jquery.sparkline.min.js"></script>
+    <!-- jvectormap -->
+    <script type="text/javascript" src="plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+    <script type="text/javascript" src="plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+    
+    <script type="text/javascript">
+		function Conectar()
+		{	//alert("pinche wey")
+		
+			var dataPost = {
+                USUARIO: $("#txtUsuario").val(),
+                PASSWORD: $("#txtPassword").val()
+            };
+			$.ajax({
+				url: "http://www.compuserviceteleco.com/conexion.php",
+				type: "post",
+				data: dataPost,
+				success: function (data) {
+					if(data == "OK"){
+						alert("acceso correcto")
+						window.location.href = "contenido.html?usuario="+$("#txtUsuario").val();
+					}else{
+						alert(data);
+					}
+				},error: function (jqXHR, ajaxOptions, thrownError) {
+					//callback(formatErrorMessage(jqXHR, ajaxOptions));
+					alert(formatErrorMessage(jqXHR, ajaxOptions));
+					
+				}
+			});
+		}
+        function Logear() {
+            var dataPost = {
+                USUARIO: $("#txtUsuario").val(),
+                PASSWORD: $("#txtPassword").val()
+            };
+
+            AjaxSAC('SuperDos/Autenticar', dataPost, true, function (callback) {
+                if (callback == 'OK') {
+                    usuario = $("#txtUsuario").val();
+
+                    setTimeout(function () {
+                        AjaxSAC('SuperDos/Principal', { USUARIO: $("#txtUsuario").val() }, true, function (callback) {
+                            //||||
+
+                            $("#contenedor").show();
+                            $("#contenedorLogin").hide();
+
+                            //$("#divInventario").prop('display', 'none');
+                        });
+                    }, 100);
+
+                } else
+                    alert(callback);
+            });
+        }
+    </script>
+
+	
+</body>
+</html>

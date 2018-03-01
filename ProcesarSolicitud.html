@@ -1,0 +1,155 @@
+<html>
+<head runat="server">
+<title>UCSG | Procesar Solicitudes</title>
+<meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	
+	<!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="fonts/font-awesome.min.css"/>
+    <!-- jvectormap -->
+    <link rel="stylesheet" href="plugins/jvectormap/jquery-jvectormap-1.2.2.css"/>
+    <!-- Theme style -->
+    <link rel="stylesheet" href="css/AdminLTE.min.css"/>
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+    folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="css/skins/_all-skins.min.css"/>
+    <style type="text/css">.jqstooltip { position: absolute;left: 0px;top: 0px;visibility: hidden;background: rgb(0, 0, 0) transparent;background-color: rgba(0,0,0,0.6);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";color: white;font: 10px arial, san serif;text-align: left;white-space: nowrap;padding: 5px;border: 1px solid white;z-index: 10000;}.jqsfield { color: white;font: 10px arial, san serif;text-align: left;}</style>
+	
+	
+	<script type="text/javascript">
+	
+	
+	</script>
+	
+	<script type="text/javascript" src="plugins/jQuery/jquery-2.2.3.min.js"></script>
+
+</head>
+<body class="skin-blue sidebar-mini">
+    <div class="wrapper">
+        <header class="main-header">
+            
+        </header>
+		<div class="content-wrapper" style="min-height: 560px;">
+            <section id="contenedorDetallePrincipal">
+                <div class="content">
+                    <div class="row">
+					 <div class="col-xs-12">
+						<div class="box box-primary">
+							<div class="box-header with-border">
+								<h3 class="box-title">Procesar Solicitudes</h3>
+							</div>
+							<!-- /.box-header -->
+							<div class="box-body" style="padding:50px">
+							<form class="form-horizontal">
+								<div class="form-group">
+								
+									<table id="grid-data" name="grid-data" class="table table-condensed table-hover table-striped" >
+										<thead>
+											
+											<tr>
+												<th data-column-id="id" data-type="numeric">Solicitud</th>
+												<th data-column-id="Asunto">Asunto</th>
+												<th data-column-id="Facultad">Facultad</th>
+												<th data-column-id="Fecha" data-order="desc">Fecha</th>
+												<th data-column-id='Observaciones' data-order='desc'>Observaciones</th>
+												<th data-column-id="Estado" >Estado</th>
+											</tr>
+											
+										</thead>
+									</table>
+
+<!--								<table id="grid-data" class="table table-condensed table-hover table-striped" >
+										<thead>
+											<tr>
+												<th data-column-id="id" data-type="numeric">Solicitud</th>
+												<th data-column-id="sender">Facultad</th>
+																					
+												<th data-column-id="sender">Asunto</th>
+												<th data-column-id="received" data-order="desc">Fecha</th>
+												
+												<th data-column-id="link" data-formatter="link" data-sortable="false">Estado-->
+												<!--<select>        
+														<option value="PEN">PENDIENTE</option>
+														<option value="TRA">EN TRAMITE</option>
+														<option value="PRO">PROCESADO</option>
+														
+												</select>
+												<TD ALIGN="center"></TD>-->
+												<!--</th>
+											</tr>
+										</thead>
+									</table>-->
+								</div>
+								
+							
+							
+
+							</form>
+							
+							<div class="box-footer">
+								
+								
+								<input type="button" onclick="javascript:Actualizar();" class="btn btn-info pull-right" value="Actualizar">
+							</div>
+							
+						</div>
+					 
+					
+					</div>
+				</Div>
+			</section>
+		</div>
+		
+
+</body>
+<!-- Bootstrap 3.3.6 -->
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script type="text/javascript" src="plugins/fastclick/fastclick.js"></script>
+    <!-- AdminLTE App -->
+    <script type="text/javascript" src="js/app.min.js"></script>
+    <!-- Sparkline -->
+    <script type="text/javascript" src="plugins/sparkline/jquery.sparkline.min.js"></script>
+    <!-- jvectormap -->
+    <script type="text/javascript" src="plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+    <script type="text/javascript" src="plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+    
+<script language="javascript">
+
+function ConsultaInfo(){
+	var url = "http://www.compuserviceteleco.com/procesar_sol.php";
+	//var strParams = "hdnUsuario="+pUsuario;
+	var strParams= "";
+	//alert(strParams)
+	
+	$.post(url, strParams, function(data){
+	
+		//alert(data)
+		//alert("paso");
+		arr = data.split("|"); 
+		if(arr[0] == "OK"){
+			$("#grid-data").html(arr[1]);
+		}else if(arr[0] == "NO"){
+			alert(arr[1])
+		}else{
+		}
+	});
+}
+
+function Actualizar(){
+alert("actualizado");
+ConsultaInfo();
+}
+
+
+function CerrarSesion(){
+
+//	window.location.href = "index.html";
+}
+ConsultaInfo();
+</script>
+</html>
